@@ -1,0 +1,24 @@
+# secrets and credentials
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+secrets*
+kubeconfig*
+*-config
+.kube/
+# terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+# python / node
+.venv*/
+node_modules/
+__pycache__/
+# misc
+*.log
+.DS_Store
+reports/*.json
