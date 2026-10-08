@@ -59,6 +59,21 @@ tools/finish-day.sh 01 "linux navigation and files"
 ```
 
 ## My notes (fill in before you commit)
-- Commands I ran:
+- Commands I ran:pwd. ls -la, cd ~, cd .., mkdir -p webapp/{src,test,config}, touch, cp -r, mv, rm -r, tree
+
 - What I learned:
-- What went wrong and how I fixed it:
+An absolute path starts from / and works from anywhere (/home/kuldeepyadav/lab), while a relative path starts from the folder I'm in (lab).
+cp needs -r to copy a folder.
+cd - jumps back to the previous folder.
+Brace expansion ({src,tests,config}) creates several folders in one command.
+
+- What went wrong and how I fixed it: I created webapp in ~/repos and then again inside the training repo instead of ~/lab/day01, because I didn't check pwd first. I fixed it with mv, and next time I'll run pwd before creating anything. Practice files must never go inside the Git repo.
+
+made a typo along the way: one command used ~/labs/day01 instead of ~/lab/day01. That mkdir -p ~/labs/day01 created an extra empty folder. It's harmless, but remove it so you don't get confused later:
+
+bash
+rmdir ~/labs/day01 ~/labs
+
+rmdir only deletes empty folders, so it can't remove anything by accident. Good habit for your notes: one letter off in a path (lab vs labs) gives "No such file or directory", so read the error message first.
+
+
