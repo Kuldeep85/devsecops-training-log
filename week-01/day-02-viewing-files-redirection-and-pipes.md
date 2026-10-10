@@ -61,6 +61,6 @@ tools/finish-day.sh 02 "viewing files redirection and pipes"
 ```
 
 ## My notes (fill in before you commit)
-- Commands I ran:
-- What I learned:
-- What went wrong and how I fixed it:
+- Commands I ran: seq, head -n, tail -n, tail -f, wc -l, printf, cat, sort, uniq -c, less, >, >>, grep
+- What I learned: > overwrites and >> appends. sort | uniq -c | sort -nr counts and ranks repeated lines. tail -f follows a file, and Ctrl+C stops it. grep needs a pattern and then a file. grep: grep PATTERN FILE shows matching lines. -c counts them, -v inverts, -n shows line numbers, and -E 'a|b' matches either. Quote the pattern.
+- What went wrong and how I fixed it: I used seq instead of head, started the background loop twice, and ran grep without a pattern, so it waited for input until I pressed Ctrl+C.
