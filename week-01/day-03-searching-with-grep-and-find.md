@@ -55,6 +55,6 @@ tools/finish-day.sh 03 "grep and find"
 ```
 
 ## My notes (fill in before you commit)
-- Commands I ran:
-- What I learned:
-- What went wrong and how I fixed it:
+- Commands I ran:mkdir -p, printf, grep -rn, grep -rni, grep -rc, grep -rv, grep -rniE, find -name, find -type f -mtime, find -size
+- What I learned: `grep -r` searches folders recursively. `-i` ignores case and `-E` allows `|`. `[:=]` matches either a colon or an equals sign. `find -name` searches by name and `-mtime -1` finds files changed in the last day. `-size -1k` only matches empty files because sizes round up to 1k blocks.
+- What went wrong and how I fixed it:I tried to use `&&` inside a grep pattern. `&&` is a shell operator that chains commands, so grep treated it as text, or the shell tried to run my pattern as a command. The fix is a character class like `[:=]`.
