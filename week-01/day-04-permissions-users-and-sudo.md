@@ -58,6 +58,6 @@ tools/finish-day.sh 04 "permissions users and sudo"
 ```
 
 ## My notes (fill in before you commit)
-- Commands I ran:
-- What I learned:
-- What went wrong and how I fixed it:
+- Commands I ran: touch, echo >, ls -l, chmod +x, chmod 600/644/750, stat -c, whoami, id, groups, sudo ls
+- What I learned: Permissions are read=4, write=2, execute=1 for owner, group, others. A script needs the execute bit to run. Private keys should be 600. `sudo` runs a command as root, and my user is in the sudo group.
+- What went wrong and how I fixed it: I typed `~lab` instead of `~/lab`, so `mkdir` created a folder named `~lab` inside the repo. I removed it with `rmdir`. I also left private.key at 750, which is too open, and set it back to 600.
