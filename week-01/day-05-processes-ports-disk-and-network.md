@@ -60,6 +60,6 @@ tools/finish-day.sh 05 "processes ports disk network"
 ```
 
 ## My notes (fill in before you commit)
-- Commands I ran:
-- What I learned:
-- What went wrong and how I fixed it:
+- Commands I ran: top, ps aux, free -h, df -h, du -sh, python3 -m http.server &, ss -tulpn, curl -I, kill %1, jobs
+- What I learned: `ss -tulpn` shows listening ports and which process owns them. `0.0.0.0` means listening on all interfaces, `127.0.0.1` means local only. Only one process can use a port ("Address already in use"). `kill %1` stops a background job. In `df -h`, read the Mounted on column; the 100% WSL tools mount is normal. Use `||` to run a command only when the previous one fails.
+- What went wrong and how I fixed it: I piped grep into echo, so the "port is free" message printed even when it wasn't checked. I typed `https;//` instead of `https://`, so the shell ran two commands. I started a second server on port 9000 and got "Address already in use", and I left the first one running until I killed it.
