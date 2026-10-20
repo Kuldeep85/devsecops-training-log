@@ -69,6 +69,16 @@ tools/finish-day.sh 07 "bash conditionals loops exit codes"
 ```
 
 ## My notes (fill in before you commit)
-- Commands I ran:
-- What I learned:
-- What went wrong and how I fixed it:
+- Commands I ran: echo $?, if/then/else/fi, grep -q, for ... do ... done, while [[ ]] ... do ... done, while read -r, &&, ||, mkdir -p, bash -c 'exit N'
+
+- What I learned: Exit code 0 means success and non-zero means failure. `if` runs on a command's exit code. `grep -q` gives only an exit code (0 found, 1 not found). `&&` runs the next command only on success, `||` only on failure. A pipeline step fails when the script exits non-zero. `if` ends with `fi`, loops end with `done`. `then`, `else` and `do` don't take a `;` after them.
+
+if CONDITION; then CMD; else CMD; fi
+for X in LIST; do CMD; done
+while CONDITION; do CMD; done
+
+fi is if backwards and closes an if. done closes for and while. There is no ; straight after then, else or do.
+
+- What went wrong and how I fixed it: I got the `>` prompt several times from mismatched quotes, a `:` instead of `;`, `while[[` without a space, `do;`, and no separator after `fi`. I fixed each one by pressing Ctrl+C and rereading the command.
+
+
