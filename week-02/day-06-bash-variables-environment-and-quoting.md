@@ -64,6 +64,9 @@ tools/finish-day.sh 06 "bash variables and environment"
 ```
 
 ## My notes (fill in before you commit)
-- Commands I ran:
-- What I learned:
-- What went wrong and how I fixed it:
+- Commands I ran: NAME=value, echo with "" and '', $(date +%F), export, bash -c, printenv, echo $PATH | tr, read -s, ${#VAR}, unset, alias, source ~/.bashrc
+
+- What I learned: Double quotes expand $VAR and single quotes don't. Only exported variables reach child processes. $PATH is searched in order and the first match runs. `read -s` keeps a secret off the screen, and `unset` removes it. Always quote "$VAR" because spaces split an unquoted variable into several words. A token on the command line is visible in `ps`, shell history and logs, so pass secrets by environment variable, file or secret store.
+
+- What went wrong and how I fixed it: I used `@NAME` instead of `$NAME`, and `$(time +%F)` instead of `$(date +%F)` because `time` is a shell keyword. I labelled a child-shell test as "main env". My `ll` alias was redundant because Ubuntu already has one.
+
