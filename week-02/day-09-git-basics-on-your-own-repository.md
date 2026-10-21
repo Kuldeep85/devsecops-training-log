@@ -61,6 +61,15 @@ tools/finish-day.sh 09 "git basics local repo"
 ```
 
 ## My notes (fill in before you commit)
-- Commands I ran:
-- What I learned:
-- What went wrong and how I fixed it:
+- Commands I ran: git init -b main, git status, git add, git add -p, git commit -m, git diff, git log --oneline --graph, git show HEAD, git rm, .gitignore
+
+- What I learned: A commit is only possible when a file has changed. The flow is working tree -> staging area -> repository. `.gitignore` keeps files like `.env` out of Git. `git add -p` lets me commit parts of a file separately. `q` leaves the pager.
+
+- What went wrong and how I fixed it: I ran `echo "# demo" README.md` without `>` so the file wasn't created. I ran `git commit` several times and got "nothing to commit, working tree clean" because the file hadn't changed. I fixed it by changing a file first, checking `git diff`, then `git add` and `git commit`.
+
+- **git log --oneline:** shows the commits in one line
+
+- **Working tree / staging area / repository:** The three areas (for your notes)
+    Working tree: the files on disk as you edit them.
+    Staging area (index): the set of changes you picked with git add for the next commit.
+    Repository: the saved history of commits inside .git.
