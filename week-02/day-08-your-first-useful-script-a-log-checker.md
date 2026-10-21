@@ -69,6 +69,44 @@ tools/finish-day.sh 08 "first script log checker"
 ```
 
 ## My notes (fill in before you commit)
-- Commands I ran:
-- What I learned:
+- Commands I ran: `cat > file <<'EOF'`, `chmod +x`, `printf`, `./loganalyse.sh`, `echo "exit code: $?"`, `grep -c`, `cp`, `rm`, `cat -n`, `code`
+
+- What I learned:   
+  - A script needs `#!/usr/bin/env bash` on the first line, and `set -euo pipefail` makes it stop on errors, unset variables and pipe failures.
+  - `$1`, `$2`, `$3` are the script arguments and `$#` is how many there are. `${2:-3}` and `${3:-normal}` give defaults.
+  - Exit codes: 0 = PASS, 1 = FAIL (too many errors), 2 = bad input (missing file or argument). A pipeline step fails when a script exits non-zero.
+  - `grep -c` prints the count but exits with 1 when the count is 0. Under `set -e` that would stop the script, so `|| true` is needed after it. I proved it with a copy of the script: without `|| true`, a log with no errors printed nothing and exited with 1.
+  - Changes to a script are typed into the script file and saved, not at the terminal. Variables like `$file` and `$mode` only exist while the script runs.
+  - Quiet mode (`./loganalyse.sh sample.log 3 quiet`) prints only PASS or FAIL, which is what a pipeline log needs.
+
 - What went wrong and how I fixed it:
+  - I put `#!/usr/bin/env bash` and `set -euo pipefail` on the same line as `<<'EOF'`, so they became a comment and were missing from the script. The script also printed PASS twice. I fixed both by editing the file in VS Code and checking it with `cat -n`.
+  - I typed exercise code at the terminal instead of in the script, so `$file` and `$mode` were empty and nothing changed. I moved the changes into the script file.
+  - I made quote and `$` typos (`"$warns;`, `&max`, mismatched `"` and `'`), and fixed them by rereading each line.
+
+**PASS run**
+```text
+$ ./loganalyse.sh sample.log
+File: sample.log
+ERROR lines: 2
+WARN lines:  1
+INFO lines:  1
+PASS
+(exit code 0)
+```
+
+**FAIL run**
+```text
+$ ./loganalyse.sh sample.log 1
+File: sample.log
+ERROR lines: 2
+WARN lines:  1
+INFO lines:  1
+FAIL: more than 1 errors
+(exit code 1)
+```
+
+**Quiet mode**
+```text
+$ ./loganalyse.sh sample.log 1 quiet
+FAIL
