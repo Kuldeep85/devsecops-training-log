@@ -71,6 +71,42 @@ tools/finish-day.sh 10 "branches merge and conflicts"
 ```
 
 ## My notes (fill in before you commit)
-- Commands I ran:
-- What I learned:
-- What went wrong and how I fixed it:
+- Commands I ran:git switch -c, git merge, git status, git add, git commit -am, git log --graph --oneline --all, git stash / stash pop, git diff --check, git rebase main, git checkout --theirs
+
+- What I learned:A conflict means two branches changed the same lines. Git adds <<<<<<< ======= >>>>>>> markers. I must edit the file, remove the markers and check with `git diff --check` before `git add`. `git add` only marks the file as resolved. Stash parks uncommitted work. A merge keeps both histories with a merge commit, while a rebase replays my commits on top of main for a straight line.
+
+- What went wrong and how I fixed it:I committed a conflicted file with the markers still inside, because I used `git add` without editing it. I found it when a later commit showed 3 deletions. I redid the exercise in a clean folder and checked with `git diff --check`. I also typed `git feature-b` and `--online` by mistake, and left an uncommitted change that blocked `git switch`.
+
+- **Graph after resolving (keep only B):
+Before the rebase: two lines that split from the same point.
+kuldeepyadav@IN-LT-PF5GKA9R:~/lab/day10/conflict2$ git --no-pager log --graph --oneline --all
+* 1731f34 (main) Add main change
+| * 775b9a0 (HEAD -> feature-c) Add c2
+| * 5368f29 Add c1
+|/  
+*   cd1161e Merge feature-b, keep only B
+|\  
+| * 7123782 (feature-b) B changes greeting
+* | 1cd1b81 (feature-a) A changes greeting
+|/  
+* d280ee0 Base
+
+After the rebase: one straight line, with your two commits replayed on top of main’s new commit. Their IDs change, because rebase creates new commits.
+kuldeepyadav@IN-LT-PF5GKA9R:~/lab/day10/conflict2$ git rebase main
+Successfully rebased and updated refs/heads/feature-c.
+kuldeepyadav@IN-LT-PF5GKA9R:~/lab/day10/conflict2$ git --no-pager log --graph --oneline --all
+* 933ca8d (HEAD -> feature-c) Add c2
+* 46bb561 Add c1
+* 1731f34 (main) Add main change
+*   cd1161e Merge feature-b, keep only B
+|\  
+| * 7123782 (feature-b) B changes greeting
+* | 1cd1b81 (feature-a) A changes greeting
+|/  
+* d280ee0 Base
+
+- **Merge vs rebase:** -
+
+I would use merge to bring a finished branch into a shared branch like main, because it keeps the real history and never rewrites commits that other people may already have. 
+
+I would use rebase on my own unpushed feature branch to tidy it onto the latest main before a pull request, because it gives a straight history, but I would never rebase commits that others have already pulled, since rebase creates new commit IDs.
