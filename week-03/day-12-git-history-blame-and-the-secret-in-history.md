@@ -61,6 +61,11 @@ tools/finish-day.sh 12 "git history and secrets"
 ```
 
 ## My notes (fill in before you commit)
-- Commands I ran:
-- What I learned:
-- What went wrong and how I fixed it:
+- Commands I ran:git log -p -S, git blame, git rm --cached, git show, gitleaks detect --source . --redact -v, gitleaks detect --no-git, curl, tar, sudo mv, sha256sum -c
+
+
+- What I learned:Deleting a committed secret does not remove it from history: `git log -p -S` still showed it. gitleaks reports secrets in old commits even after the file is untracked. `--no-git` scans only the files on disk, so after deleting the file it finds nothing, while the history scan still finds the secret. A history scan reads only commits, so the pre-commit scan must run after `git add` on the staged changes.
+
+- What went wrong and how I fixed it:I typed `sudo mv detect --source ...`, mixing up mv and gitleaks, and fixed it by running `sudo mv gitleaks /usr/local/bin/` then `gitleaks detect`. `git log -p` opened a pager, and I left it with `q`. I found that my finish-day.sh scanned before `git add`, so it could not see the files being committed, and I moved the scan to the staged changes.
+- **gitleaks summary (redacted):** 3 commits scanned, leaks found: 1, RuleID generic-api-key, File .env, Line 1, Commit f1b4669, Secret REDACTED
+- **3-step response plan:** (1) Revoke/rotate the secret first, assuming it is compromised. (2) Optionally remove it from history with git filter-repo or BFG, force-push, and tell everyone with a clone. (3) Prevent a repeat with .gitignore, a gitleaks pre-commit scan, pipeline scanning, and a secret store.
