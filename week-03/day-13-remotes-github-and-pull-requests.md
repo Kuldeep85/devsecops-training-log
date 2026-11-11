@@ -66,6 +66,47 @@ tools/finish-day.sh 13 "remotes github and pull requests"
 ```
 
 ## My notes (fill in before you commit)
-- Commands I ran:
-- What I learned:
-- What went wrong and how I fixed it:
+
+- Commands I ran: git remote -v, git branch -vv, git switch -c, git push -u origin, git pull, git pull --rebase, git branch -d, git fetch, git fetch --prune, git commit --allow-empty, git reset --soft
+
+- What I learned: The full cycle is branch, commit, push the branch, open a PR, squash and merge, pull, delete the branch. Squash and merge makes a new commit, so `git branch -d` warns that the branch is not merged to HEAD. `git fetch` downloads without changing my files, while `git pull` fetches and then merges or rebases into my branch. Branch protection stops direct pushes to main.
+
+
+
+- What went wrong and how I fixed it: My `cat >` overwrote the starter cheat sheet table and I left a typo ("sheer"), so I fixed it in a second PR edited in the browser. 
+
+Test a direct push:
+bash
+   git switch main && git pull
+   git commit --allow-empty -m "test: direct push to protected main"
+   git push
+
+Expect a rejection starting with remote: error: GH006: Protected branch update failed for refs/heads/main.
+
+Undo the test commit, which is safe because it is empty:
+
+bash
+   git reset --soft HEAD~1
+   git status
+
+git status should say your branch is up to date with origin/main.
+
+[Write what happened with the protected-branch test and how you relaxed the rule so my daily push works.]
+
+- Merged PRs: https://github.com/Kuldeep85/devsecops-training-log/pull/1 and https://github.com/Kuldeep85/devsecops-training-log/pull/2
+
+- fetch vs pull: `git fetch` downloads new commits without changing my files or branch, while `git pull` does a fetch and then merges (or rebases) them into my current branch.
+
+git fetch downloads new commits from the remote without touching my files or branch, while git pull does a fetch and then merges those commits (or, with --rebase, replays mine on top) into my current branch.
+
+- Branch protection result: kuldeepyadav@IN-LT-PF5GKA9R:~/repos/devsecops-training-log$ git push
+Enumerating objects: 1, done.
+Counting objects: 100% (1/1), done.
+Writing objects: 100% (1/1), 220 bytes | 220.00 KiB/s, done.
+Total 1 (delta 0), reused 0 (delta 0), pack-reused 0
+remote: error: GH006: Protected branch update failed for refs/heads/main.
+remote: 
+remote: - Changes must be made through a pull request.
+To github.com:Kuldeep85/devsecops-training-log.git
+ ! [remote rejected] main -> main (protected branch hook declined)
+error: failed to push some refs to 'github.com:Kuldeep85/devsecops-training-log.git'
