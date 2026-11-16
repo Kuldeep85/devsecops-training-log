@@ -55,6 +55,22 @@ tools/finish-day.sh 15 "docker building images"
 ```
 
 ## My notes (fill in before you commit)
-- Commands I ran:
-- What I learned:
-- What went wrong and how I fixed it:
+
+Two reasons a small base image is better for security (my wording, so write your own):
+
+Smaller attack surface. Fewer packages and tools means fewer vulnerabilities to patch, and fewer tools such as a shell or compilers for an attacker to use.
+Faster to scan, patch and rebuild. Scanners report fewer findings, and pulls are quicker.
+
+Interview point: the lesson’s other flagged mistakes are the latest tag and running as root. Pin a version such as nginx:1.27-alpine, because latest can change under you.
+
+- Commands I ran: docker build -t my-site:1.0 ., docker run -d -p 8082:80, docker history, docker tag, docker image ls, docker rm -f. Exercises: built my-site:1.1 and ran both versions on 8082 and 8083, then built the same site on nginx:latest to compare sizes.
+
+- What I learned: An image is built in layers, and my Dockerfile adds only one small layer (COPY, 24.6kB) on top of the nginx:alpine base. A tag is just a label, and my-site:1.0 and :latest share one image ID. Size: alpine-based 93.7MB vs nginx:latest-based [your number]. A small base image means a smaller attack surface and quicker scans. I should pin versions rather than use latest.
+
+- What went wrong and how I fixed it: Running `docker run --name my-site` a second time failed with "container name already in use". I removed the old container with docker rm -f my-site.
+
+
+## My notes
+- **Commands I ran:** 
+- **What I learned:** 
+- **What went wrong and how I fixed it:** 
