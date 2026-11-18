@@ -1,0 +1,10 @@
+services:
+  web:
+    image: nginx:alpine
+  client:
+    image: alpine
+    command: sh -c "sleep 3 && wget -qO- http://web | head -3"
+    depends_on:
+      - web
+  cache:
+    image: redis:alpine
