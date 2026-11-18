@@ -49,6 +49,8 @@ The default container prints `uid=0(root)`. With `--read-only` the `touch` fails
 
 ## Your exercise (type it yourself, don't copy)
 1. Explain in three sentences why a compromised root container is worse than a compromised non-root one.
+If an attacker compromises a root container, they have full control inside it and can install tools, change files and attack other systems from there. A mistake such as a mounted Docker socket or extra capabilities can let them escape to the host, and then to everything else on the machine. A non-root container with dropped capabilities limits the damage to one unprivileged user.
+
 2. Take the Day 15 image and add a non-root user. Confirm with `docker run --rm my-site:2.0 id`. (nginx needs extra port and folder changes — if it fights back, switch the base to `nginxinc/nginx-unprivileged` and note what you learned.)
 3. List the four flags you would want in every production container.
 
@@ -63,6 +65,9 @@ tools/finish-day.sh 16 "docker hardening flags"
 ```
 
 ## My notes (fill in before you commit)
-- Commands I ran:
-- What I learned:
-- What went wrong and how I fixed it:
+- Commands I ran: docker run --rm alpine id, --user 1000:1000, --read-only, --cap-drop ALL, --security-opt no-new-privileges, and a Dockerfile with USER 1000 (nonroot-demo). Exercise: built my-site:2.0 on nginxinc/nginx-unprivileged.
+
+- What I learned: Containers run as root by default. --read-only blocked writes, --cap-drop ALL blocked chown, and USER in the Dockerfile makes the image safe by default. A compromised root container is worse because the attacker has full control and a bigger chance of reaching the host. Four production flags: --user, --read-only, --cap-drop ALL, --security-opt no-new-privileges. The unprivileged nginx image listens on 8080 because non-root can't use ports below 1024.
+
+- What went wrong and how I fixed it: I typed `docker build -t nonroot-demo` without the `.` and `docker run -rm` with one dash, both errors I fixed on the retry. I also mistyped ~/ab instead of ~/lab and removed the stray folder.
+
