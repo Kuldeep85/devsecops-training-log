@@ -61,6 +61,40 @@ tools/finish-day.sh 19 "local mysql and dbvisualizer"
 ```
 
 ## My notes (fill in before you commit)
-- Commands I ran:
-- What I learned:
-- What went wrong and how I fixed it:
+- Commands I ran: docker exec -it mysql-lab mysql, CREATE/DROP DATABASE, CREATE TABLE, INSERT / SELECT / UPDATE / DELETE, a JOIN with SUM and GROUP BY, docker stop / start, running a .sql file with docker exec -i. Connected from DbVisualizer to localhost:3306.
+
+- What I learned: The JOIN gave: asha 370.50, meera 99.99. AUTO_INCREMENT does not reset after DELETE (new ids were 7, 8, 9), so my orders with user_id 1 and 3 no longer matched any user and the JOIN returned an empty set. TRUNCATE resets the counter, and a foreign key would have stopped the orphan rows. The data survived docker stop/start; only docker rm deletes it, and a named volume would keep it safe. Only fake data goes into this database.
+
+- What went wrong and how I fixed it: I typed the password with the wrong case (LABOnly123 vs LabOnly123) so login failed; I used the original password. I ran the INSERT twice and made duplicate users, then the JOIN was empty because of the changed ids; I rebuilt the database from a script (shop.sql) and the join worked. DbVisualizer first used the DataDirect driver that needs registration, so I switched to MySQL 8+, and a stopped container caused 'Connection refused' until I ran docker start mysql-lab.
+
+USE shop;
+CREATE TABLE users (id INT PRIMARY KEY AUTO_INCREMENT, name VARCHAR(50), email VARCHAR(100));
+INSERT INTO users (name, email) VALUES ('asha','asha@example.com'), ('ravi','ravi@example.com'), ('meera','meera@example.com');
+UPDATE users SET email = 'asha@demo.test' WHERE name = 'asha';
+DELETE FROM users WHERE name = 'ravi';
+SELECT * FROM users;
+CREATE TABLE orders (id INT PRIMARY KEY AUTO_INCREMENT, user_id INT, amount DECIMAL(8,2));
+INSERT INTO orders (user_id, amount) VALUES (1, 250.00), (1, 120.50), (3, 99.99);
+SELECT * FROM orders;
+SELECT u.name, SUM(o.amount) AS total FROM users u JOIN orders o ON o.user_id = u.id GROUP BY u.name;
+
+kuldeepyadav@IN-LT-PF5GKA9R:~/repos/devsecops-training-log$ docker exec -i -e MYSQL_PWD="$PW" mysql-lab mysql -uroot -t < labs/day-19/shop.sql
++----+-------+-------------------+
+| id | name  | email             |
++----+-------+-------------------+
+|  1 | asha  | asha@demo.test    |
+|  3 | meera | meera@example.com |
++----+-------+-------------------+
++----+---------+--------+
+| id | user_id | amount |
++----+---------+--------+
+|  1 |       1 | 250.00 |
+|  2 |       1 | 120.50 |
+|  3 |       3 |  99.99 |
++----+---------+--------+
++-------+--------+
+| name  | total  |
++-------+--------+
+| asha  | 370.50 |
+| meera |  99.99 |
++-------+--------+
