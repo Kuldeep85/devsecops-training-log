@@ -55,8 +55,31 @@ A green run appears in the Actions tab within a minute. The log shows your `echo
 2. Add a step that prints the commit SHA using `${{ github.sha }}`.
 3. Add a status badge for the workflow to the top of the repo README (Actions → workflow → ... → Create status badge).
 
+
 ## Save your evidence
 Put the link to the repo and to one green run in **My notes**. Also copy `hello.yml` to `labs/day-22/hello.yml`.
+
+https://github.com/Kuldeep85/cicd-practice/actions/runs/44703201690
+
+kuldeepyadav@IN-LT-PF5GKA9R:~/repos/cicd-practice$ cat ~/repos/devsecops-training-log/labs/day-22/hello.yml
+name: hello
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  hello:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Say hello
+        run: echo "Hello from GitHub Actions on $(uname -s)"
+      - name: Show repo files
+        run: ls -la
+      - name: Show commit SHA
+        run: echo "Commit is ${{ github.sha }}"
+kuldeepyadav@IN-LT-PF5GKA9R:~/repos/cicd-practice$ 
 
 Then commit and push (from the training repo):
 
@@ -66,6 +89,8 @@ tools/finish-day.sh 22 "github actions first workflow"
 ```
 
 ## My notes (fill in before you commit)
-- Commands I ran:
-- What I learned:
-- What went wrong and how I fixed it:
+- Commands I ran: git clone, mkdir -p .github/workflows, git add / commit / push, plus ssh -T git@github.com. Exercises: made the workflow fail with `exit 1`, fixed it, added a step printing ${{ github.sha }}, and added a status badge to the README.
+
+- What I learned: A workflow file in .github/workflows runs on push or manual trigger (workflow_dispatch). actions/checkout@v4 gets my code onto the runner, and steps run in order, so a failed step skips the rest. A failure shows as a red cross on that step and a red run. The same ideas as my Azure DevOps YAML: trigger, job, steps, script. Repo: https://github.com/Kuldeep85/cicd-practice. Green run: [paste run URL].
+
+- What went wrong and how I fixed it: git clone said "Repository not found" because I had not created the repo on GitHub yet, and I first used my WSL username instead of my GitHub username (Kuldeep85). I created the public repo cicd-practice in the browser and cloned with the right name.

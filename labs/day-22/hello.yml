@@ -1,0 +1,17 @@
+name: hello
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  hello:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Say hello
+        run: echo "Hello from GitHub Actions on $(uname -s)"
+      - name: Show repo files
+        run: ls -la
+      - name: Show commit SHA
+        run: echo "Commit is ${{ github.sha }}"
