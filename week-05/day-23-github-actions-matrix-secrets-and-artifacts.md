@@ -74,6 +74,47 @@ The `test` job runs twice (Node 20 and 22). The secret prints as `***` in the lo
 ## Save your evidence
 Save `matrix.yml` as `labs/day-23/matrix.yml` and paste your two secret-handling rules into **My notes**.
 
+Two rules for handling secrets (rewrite in your own words):
+
+Never print or echo a secret, and never write it into the YAML or the repo. Use ${{ secrets.NAME }} and store the value in the settings.
+Give each secret the least access it needs and rotate it if it might have leaked. If a real secret ever appears in a log or commit, treat it as exposed and replace it, because deleting the line isn’t enough.
+
+kuldeepyadav@IN-LT-PF5GKA9R:~/repos/cicd-practice$ cat ~/repos/devsecops-training-log/labs/day-23/matrix.yml
+name: matrix
+on: [workflow_dispatch, push]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [20, 22, 24]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+      - run: node --version
+      - name: Use a secret safely
+        env:
+          DEMO_TOKEN: ${{ secrets.DEMO_TOKEN }}
+        run: |
+          echo "token length: ${#DEMO_TOKEN}"
+          echo "printing it: $DEMO_TOKEN"
+      - run: echo "build ${{ github.run_number }}" > build.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: build-info-node${{ matrix.node }}
+          path: build.txt
+
+  report:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "all matrix jobs passed"
+kuldeepyadav@IN-LT-PF5GKA9R:~/repos/cicd-practice$ 
+
 Then commit and push (from the training repo):
 
 ```bash
@@ -82,6 +123,8 @@ tools/finish-day.sh 23 "github actions matrix secrets artifacts"
 ```
 
 ## My notes (fill in before you commit)
-- Commands I ran:
-- What I learned:
-- What went wrong and how I fixed it:
+- Commands I ran: wrote .github/workflows/matrix.yml, validated it with python3 yaml, git commit --amend, git pull --rebase, git push. Added the repo secret DEMO_TOKEN in Settings. Exercises: added Node 24, made one entry fail, tried fail-fast: false.
+
+- What I learned: A matrix runs the same job once per value (Node 20, 22, 24). The secret printed as *** in the log, but masking is only a safety net. Artifacts appeared on the run page, one per matrix entry. With fail-fast on, one failure cancels the other matrix jobs; with fail-fast: false they finish, but report was still skipped because needs: test needs all of them to pass. Two secret rules: [your two rules].
+
+- What went wrong and how I fixed it: My pasted heredoc was garbled because EOF had other text on the same line, so I rewrote the file and validated it. The push was rejected (fetch first) because the remote had a commit I didn't have; I used git pull --rebase and pushed again.

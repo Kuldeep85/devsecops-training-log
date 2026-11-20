@@ -1,0 +1,33 @@
+name: matrix
+on: [workflow_dispatch, push]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [20, 22, 24]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+      - run: node --version
+      - name: Use a secret safely
+        env:
+          DEMO_TOKEN: ${{ secrets.DEMO_TOKEN }}
+        run: |
+          echo "token length: ${#DEMO_TOKEN}"
+          echo "printing it: $DEMO_TOKEN"
+      - run: echo "build ${{ github.run_number }}" > build.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: build-info-node${{ matrix.node }}
+          path: build.txt
+
+  report:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "all matrix jobs passed"
