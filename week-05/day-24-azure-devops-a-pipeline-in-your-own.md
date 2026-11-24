@@ -56,7 +56,40 @@ A run appears with your `echo` output including the build ID and branch name. If
 3. Compare this file with the GitHub Actions `hello.yml`: list three differences in syntax.
 
 ## Save your evidence
-Copy the file to `labs/day-24/azure-pipelines.yml`. Put a screenshot of your green **personal-org** run in `labs/day-24/run.png` (check it shows no work or client information).
+Copy the file to `labs/day-24/azure-pipelines.yml`. 
+
+parameters:
+  - name: flag
+    displayName: Run the extra step?
+    type: boolean
+    default: false
+
+trigger:
+  branches:
+    include: [main]
+
+variables:
+  greeting: Hello
+
+pool:
+  name: Default
+
+steps:
+  - script: |
+      echo "Build $(Build.BuildId) on branch $(Build.SourceBranchName)"
+      node --version || echo "node is not installed on this agent"
+    displayName: Show build info
+  - script: echo "$(greeting) from Azure Pipelines"
+    displayName: Print greeting
+  - script: echo "flag is on"
+    displayName: Flag step
+    condition: eq('${{ parameters.flag }}', 'true')
+
+Put a screenshot of your green **personal-org** run in `labs/day-24/run.png` (check it shows no work or client information).
+
+![alt text](image.png)
+
+
 
 Then commit and push (from the training repo):
 
@@ -66,6 +99,8 @@ tools/finish-day.sh 24 "azure devops personal pipeline"
 ```
 
 ## My notes (fill in before you commit)
-- Commands I ran:
-- What I learned:
-- What went wrong and how I fixed it:
+- Commands I ran: created a personal Azure DevOps organisation and project, created a short-lived PAT with Agent Pools (Read & manage), downloaded and ran a self-hosted agent (config.sh, run.sh), added azure-pipelines.yml to my GitHub repo, created the pipeline from the existing YAML file, then added a variable and a boolean parameter with a condition.
+
+- What I learned: A new organisation has no Microsoft-hosted agents until Microsoft approves a request, so I used a self-hosted agent on my own Ubuntu, which only works while run.sh is running. The PAT is only needed to register the agent, so I revoked it afterwards. The pipeline needs permission to use the agent pool. A condition skips a step. Three differences from GitHub Actions: [your three].
+
+- What went wrong and how I fixed it: I first clicked the Azure free trial by mistake (Get started with Azure); I went to dev.azure.com directly instead and did not sign up for anything or enter a card.

@@ -1,0 +1,26 @@
+parameters:
+  - name: flag
+    displayName: Run the extra step?
+    type: boolean
+    default: false
+
+trigger:
+  branches:
+    include: [main]
+
+variables:
+  greeting: Hello
+
+pool:
+  name: Default
+
+steps:
+  - script: |
+      echo "Build $(Build.BuildId) on branch $(Build.SourceBranchName)"
+      node --version || echo "node is not installed on this agent"
+    displayName: Show build info
+  - script: echo "$(greeting) from Azure Pipelines"
+    displayName: Print greeting
+  - script: echo "flag is on"
+    displayName: Flag step
+    condition: eq('${{ parameters.flag }}', 'true')
