@@ -1,0 +1,4 @@
+[ Build ] ---> [ Test ] ---> [ Deploy ]
+  build job      test job      deploy job
+  + artifact     lint job      runs only if Test succeeded
+                               AND runDeploy = true

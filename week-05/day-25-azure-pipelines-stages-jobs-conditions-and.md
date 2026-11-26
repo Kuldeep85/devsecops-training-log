@@ -88,7 +88,12 @@ Build and Test run every time; Deploy is skipped unless you tick the box. The Bu
 ## Your exercise (type it yourself, don't copy)
 1. Add a second job to Test that runs in parallel. Check whether it really runs in parallel on your free agent (it may queue: explain why).
 2. Change the template so it prints a second parameter.
+
 3. Draw the stage diagram (boxes and arrows) for your file and save it as `labs/day-25/stages.png` or as text.
+[ Build ] ---> [ Test ] ---> [ Deploy ]
+  build job      test job      deploy job
+  + artifact     lint job      runs only if Test succeeded
+                               AND runDeploy = true
 
 ## Save your evidence
 Save the two YAML files under `labs/day-25/` and put your parallelism explanation into **My notes**.
@@ -101,6 +106,9 @@ tools/finish-day.sh 25 "azure pipelines stages and templates"
 ```
 
 ## My notes (fill in before you commit)
-- Commands I ran:
-- What I learned:
-- What went wrong and how I fixed it:
+- Commands I ran: wrote templates/greet.yml and a multi-stage azure-pipelines.yml (Build, Test, Deploy) with a template, a boolean parameter, a condition and publish: out; ran it twice, once with the deploy box ticked. Exercises: added a second job (lint) to Test with sleep, added a second template parameter, drew the stage diagram.
+
+- What I learned: Stages run in order using dependsOn. The Deploy stage was skipped normally and ran when I ticked runDeploy (condition and(succeeded(), eq(parameters.runDeploy, 'true'))). A template is reusable steps with its own parameters. publish: out saves build output as an artifact. My two jobs in Test did not run in parallel: I have one self-hosted agent and a free organisation has one self-hosted parallel job, so the second job waited for the first.
+
+- What went wrong and how I fixed it: I pasted YAML into the terminal with heredocs several times and the EOF line got mixed up with other text, so I abandoned them and edited the file in VS Code instead. I also saved my Day 24 screenshot in week-05 instead of labs/day-24, and moved it.
+

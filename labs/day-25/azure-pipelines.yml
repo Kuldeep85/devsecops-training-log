@@ -1,0 +1,51 @@
+trigger:
+  branches:
+    include: [main]
+
+parameters:
+  - name: runDeploy
+    displayName: Run the deploy stage?
+    type: boolean
+    default: false
+
+pool:
+  vmImage: ubuntu-latest   # or: name: Default
+
+stages:
+  - stage: Build
+    jobs:
+      - job: build
+        steps:
+          - template: templates/greet.yml
+            parameters:
+              who: Build
+              when: tomorrow
+          - script: |
+              mkdir -p out && echo "build $(Build.BuildId)" > out/build.txt
+            displayName: Create output
+          - publish: out
+            artifact: build-output
+
+  - stage: Test
+    dependsOn: Build
+    jobs:
+      - job: test
+        steps:
+          - script: |
+              echo "tests would run here"
+              sleep 20
+            displayName: Test
+      - job: lint
+        steps:
+          - script: |
+              echo "lint would run here"
+              sleep 20
+            displayName: Lint
+
+  - stage: Deploy
+    dependsOn: Test
+    condition: and(succeeded(), eq('${{ parameters.runDeploy }}', 'true'))
+    jobs:
+      - job: deploy
+        steps:
+          - script: echo "deploying"

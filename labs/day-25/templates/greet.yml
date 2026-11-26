@@ -1,0 +1,11 @@
+parameters:
+  - name: who
+    type: string
+    default: world
+  - name: when
+    type: string
+    default: world 
+
+steps:
+  - script: echo "Hello ${{ parameters.who }}, see you ${{ parameters.when }}"
+    displayName: Greet ${{ parameters.who }}
