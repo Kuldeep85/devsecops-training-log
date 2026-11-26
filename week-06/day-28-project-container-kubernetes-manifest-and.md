@@ -39,6 +39,7 @@ Trivy reports HIGH/CRITICAL issues in the `node:14` image and in the insecure ma
 
 ## Save your evidence
 Commit the updated log with the 'before' numbers. Save one screenshot of the Trivy summary in `evidence/` (no client data, no tokens).
+![alt text](image.png)
 
 Then commit and push (from the training repo):
 
@@ -48,6 +49,10 @@ tools/finish-day.sh 28 "project container and dast scans"
 ```
 
 ## My notes (fill in before you commit)
-- Commands I ran:
-- What I learned:
-- What went wrong and how I fixed it:
+- Commands I ran: trivy --version, make container, trivy image --severity HIGH,CRITICAL on demo-app:local, trivy config on the K8s manifest, SBOM generation (CycloneDX).
+
+- What I learned: the image scan before-number is 422 HIGH/CRITICAL before (405 HIGH, 17 CRITICAL; 376 in Debian OS packages, 46 in Node.js packages) on an old Debian 10 base. The K8s manifest scored 0 misconfigurations. privileged: true and runAsUser: 0 are dangerous because a compromise inside the container becomes root on the container and a path to the host. In report-only mode a crashed scan prints the same "found issues" warning as a real finding, so a gate must also check that a report exists.
+
+The OS layer (376) is eight times bigger than the Node.js packages (46), so most of the risk came from the old Debian 10 base image, not my app code
+
+- What went wrong and how I fixed it: docker build failed at "npm ci" with "Cannot read property 'express' of undefined" because node:14 ships npm 6, which can't read my newer package-lock.json. I changed FROM node:14 to node:16 (npm 8) and the build worked. Trivy then failed with "No such image: demo-app:local" because there was nothing built, and the script still printed "found issues (report-only mode)". I also guessed the wrong report filename (trivy-image.json) when counting findings.
